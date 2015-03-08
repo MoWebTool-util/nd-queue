@@ -14,35 +14,33 @@ $ spm install nd-queue --save
 
 ```js
 var Queue = require('nd-queue');
-// use Queue
-```
-## 开发
 
-### 本地 Web 服务
+// new Queue
+var q ＝ new Queue();
 
-```bash
-grunt
-```
+// use function
+q.use(function(next) {
+  if (true) {
+    next();
+  }
+});
 
-浏览器中访问 http://127.0.0.1:8851
+// use functions
+q.use([function(next) {
+  if (true) {
+    next();
+  }
+}, function(next) {
+  if (true) {
+    next();
+  }
+}]);
 
-### 生成/查看 API 文档
+// run queue
+q.run();
 
-```bash
-grunt doc
-grunt
-```
-
-浏览器中访问 http://127.0.0.1:8851/doc
-
-### 代码检查与单元测试
-
-```bash
-grunt test
-```
-
-### 发布组件到 SPM 源
-
-```bash
-grunt publish
+// or run queue with callback
+q.run(function() {
+  console.log('all done!');
+});
 ```

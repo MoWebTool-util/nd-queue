@@ -16,11 +16,18 @@ Queue.prototype.use = function(fn) {
 };
 
 Queue.prototype.run = function(cb) {
+  var stack = this.stack;
+  var i = 0;
 
   (function next() {
     var fn = stack[i++];
 
-    fn ? fn(next) : (cb && cb());
+    if (fn) {
+      fn(next);
+    } else if (cb) {
+      cb();
+    }
+
   })();
 };
 
