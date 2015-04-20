@@ -19,28 +19,29 @@ var Queue = require('nd-queue');
 var q ＝ new Queue();
 
 // use function
-q.use(function(next) {
+q.use(function([arg1, arg2, ...], next) {
+  // do some (a)sync job, then
   if (true) {
     next();
   }
 });
 
 // use functions
-q.use([function(next) {
+q.use([function([arg1, arg2, ...], next) {
   if (true) {
     next();
   }
-}, function(next) {
+}, function([arg1, arg2, ...], next) {
   if (true) {
     next();
   }
 }]);
 
 // run queue
-q.run();
+q.run([arg1, arg2, ...]);
 
 // or run queue with callback
-q.run(function() {
+q.run([arg1, arg2, ...], function() {
   console.log('all done!');
 });
 ```
