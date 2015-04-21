@@ -1,6 +1,6 @@
 # nd-queue
 
-[![spm version](http://spmjs.io/badge/nd-queue)](http://spmjs.io/package/nd-queue)
+[![spm version](http://spm.crossjs.com/badge/nd-queue)](http://spm.crossjs.com/package/nd-queue)
 
 > 简单的队列执行控制。
 
@@ -41,7 +41,7 @@ q.use([function([arg1, arg2, ...], next) {
 q.run([arg1, arg2, ...]);
 
 // or run queue with callback
-q.run([arg1, arg2, ...], function() {
+q.run([arg1, arg2, ...], function([arg1, arg2, ...]) {
   console.log('all done!');
 });
 ```
