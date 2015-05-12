@@ -12,13 +12,17 @@ var Queue = function() {
 };
 
 Queue.prototype.use = function(fn) {
+  if (!this.stack) {
+    this.stack = [];
+  }
+
   this.stack = this.stack.concat(fn);
 
   return this;
 };
 
 Queue.prototype.run = function() {
-  var stack = this.stack;
+  var stack = this.stack || [];
   var i = 0;
 
   var args = slice.call(arguments);

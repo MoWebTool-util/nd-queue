@@ -45,3 +45,17 @@ q.run([arg1, arg2, ...], function([arg1, arg2, ...]) {
   console.log('all done!');
 });
 ```
+
+```js
+// mixin to classes
+
+var Queue = require('nd-queue');
+
+var WidgetHasQueue = Widget.extend({
+
+  // 使用 handlebars
+  Implements: [Queue]
+
+  ...
+});
+```
