@@ -12,39 +12,7 @@ $ spm install nd-queue --save
 
 ## 使用
 
-```js
-var Queue = require('nd-queue');
-
-// new Queue
-var q ＝ new Queue();
-
-// use function
-q.use(function([arg1, arg2, ...], next) {
-  // do some (a)sync job, then
-  if (true) {
-    next();
-  }
-});
-
-// use functions
-q.use([function([arg1, arg2, ...], next) {
-  if (true) {
-    next();
-  }
-}, function([arg1, arg2, ...], next) {
-  if (true) {
-    next();
-  }
-}]);
-
-// run queue
-q.run([arg1, arg2, ...]);
-
-// or run queue with callback
-q.run([arg1, arg2, ...], function([arg1, arg2, ...]) {
-  console.log('all done!');
-});
-```
+特殊用法，混入到类中
 
 ```js
 // mixin to classes
@@ -59,3 +27,36 @@ var WidgetHasQueue = Widget.extend({
   ...
 });
 ```
+
+### run
+
+synchronous. run queue member step by step (one invokes by previous one with `next`).
+
+```js
+var queue = new Queue()
+
+// use function
+queue.use(function([arg1, arg2, ...], next){
+  // do some (a)sync job, then
+  next()
+})
+
+// use functions
+queue.use([function([arg1, arg2, ...], next){
+  // do some (a)sync job, then
+  next()
+}, ...])
+
+// dynamically pass arguments to queue members
+queue.run([arg1, arg2, ... ], [function callback([arg1, arg2, ... ]) {
+  // do some callbacks
+}])
+```
+
+### any
+
+asynchronous. if any member of the queue is finished, call the callback.
+
+### all
+
+asynchronous. if all members of the queue is finished, call the callback.
