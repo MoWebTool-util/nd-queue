@@ -47,6 +47,12 @@ queue.use([function([arg1, arg2, ...], next){
   next()
 }, ...])
 
+// use function with context key (defaults: 'ctx')
+queue.use(function([arg1, arg2, ...], next){
+  // do some (a)sync job, then
+  next()
+}, 'upload')
+
 // dynamically pass arguments to queue members
 queue.run([arg1, arg2, ... ], [function callback([arg1, arg2, ... ]) {
   // do some callbacks
