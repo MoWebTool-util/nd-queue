@@ -24,4 +24,5 @@ doc
 node_modules
 sea-modules
 spm_modules
+tests
 Thumbs.db
