@@ -7,6 +7,26 @@
 
 var slice = Array.prototype.slice;
 
+var parse = function(args) {
+  var done;
+  var fail;
+
+  if (args.length && typeof args[args.length - 1] === 'function') {
+    done = args.pop();
+  }
+
+  if (args.length && typeof args[args.length - 1] === 'function') {
+    fail = done;
+    done = args.pop();
+  }
+
+  return {
+    args: args,
+    done: done,
+    fail: fail
+  };
+};
+
 var Queue = function() {
   this.stack = {};
 };
@@ -38,12 +58,7 @@ Queue.prototype.run = function() {
   var fns = [];
   var i = 0;
 
-  var args = slice.call(arguments);
-  var cb;
-
-  if (args.length && typeof args[args.length - 1] === 'function') {
-    cb = args.pop();
-  }
+  var parsed = parse(slice.call(arguments));
 
   // flatten
   if (stack) {
@@ -52,13 +67,19 @@ Queue.prototype.run = function() {
     });
   }
 
+  function fail() {
+    if (parsed.fail) {
+      parsed.fail.apply(null, parsed.args);
+    }
+  }
+
   (function done() {
     var fn = fns[i++];
 
     if (fn) {
-      fn.apply(null, args.concat(done));
-    } else if (cb) {
-      cb.apply(null, args);
+      fn.apply(null, parsed.args.concat(done, fail));
+    } else if (parsed.done) {
+      parsed.done.apply(null, parsed.args);
     }
   })();
 };
@@ -67,12 +88,7 @@ Queue.prototype.any = function() {
   var stack = this.stack;
   var fns = [];
 
-  var args = slice.call(arguments);
-  var cb;
-
-  if (args.length && typeof args[args.length - 1] === 'function') {
-    cb = args.pop();
-  }
+  var parsed = parse(slice.call(arguments));
 
   // flatten
   if (stack) {
@@ -83,19 +99,24 @@ Queue.prototype.any = function() {
 
   var ok;
   var done = function() {
-    if (ok) {
-      return;
-    }
-
-    ok = true;
-
-    if (cb) {
-      cb.apply(null, args);
+    // if one done
+    if (!ok && parsed.done) {
+      ok = true;
+      parsed.done.apply(null, parsed.args);
     }
   };
 
+  var i = 0;
+  var n = fns.length;
+  function fail() {
+    // if all failed
+    if (++i === n && parsed.fail) {
+      parsed.fail.apply(null, parsed.args);
+    }
+  }
+
   fns.forEach(function(fn) {
-    fn.apply(null, args.concat(done));
+    fn.apply(null, parsed.args.concat(done, fail));
   });
 };
 
@@ -103,12 +124,7 @@ Queue.prototype.all = function() {
   var stack = this.stack;
   var fns = [];
 
-  var args = slice.call(arguments);
-  var cb;
-
-  if (args.length && typeof args[args.length - 1] === 'function') {
-    cb = args.pop();
-  }
+  var parsed = parse(slice.call(arguments));
 
   // flatten
   if (stack) {
@@ -120,17 +136,23 @@ Queue.prototype.all = function() {
   var i = 0;
   var n = fns.length;
   var done = function() {
-    if (++i !== n) {
-      return;
+    // if all done
+    if (++i === n && parsed.done) {
+      parsed.done.apply(null, parsed.args);
     }
+  };
 
-    if (cb) {
-      cb.apply(null, args);
+  var no;
+  var fail = function() {
+    // if one done
+    if (!no && parsed.fail) {
+      no = true;
+      parsed.fail.apply(null, parsed.args);
     }
   };
 
   fns.forEach(function(fn) {
-    fn.apply(null, args.concat(done));
+    fn.apply(null, parsed.args.concat(done, fail));
   });
 };
 

@@ -17,10 +17,10 @@ describe('run', function() {
     a = {};
   });
 
-  it('with callback', function() {
-    queue.use(function(next) {
+  it('with done', function() {
+    queue.use(function(done) {
       i += 1;
-      next();
+      done();
     });
 
     queue.run(function() {
@@ -32,10 +32,10 @@ describe('run', function() {
     expect(i).to.be(3);
   });
 
-  it('without callback', function() {
-    queue.use(function(next) {
+  it('without done', function() {
+    queue.use(function(done) {
       i += 1;
-      next();
+      done();
     });
 
     queue.run();
@@ -44,9 +44,9 @@ describe('run', function() {
   });
 
   it('with params', function() {
-    queue.use(function(a, next) {
+    queue.use(function(a, done) {
       a.index = i += 1;
-      next();
+      done();
     });
 
     queue.run(a);
@@ -55,28 +55,31 @@ describe('run', function() {
   });
 
   it('does not go through', function() {
-    queue.use(function(next) {
+    queue.use(function(done) {
       i += 1;
-      next();
+      done();
     });
 
-    queue.use(function(/*next*/) {
+    queue.use(function(done, fail) {
       i += 2;
-      // next()
+      fail();
     });
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       // this would not be executed
       i += 4;
-      next();
+      done();
     });
 
     queue.run(function() {
       // this would not be executed
       expect().fail('this would not be executed');
+    }, function() {
+      // this would be executed
+      i += 8;
     });
 
-    expect(i).to.be(3);
+    expect(i).to.be(11);
   });
 
   afterEach(function() {
@@ -96,17 +99,17 @@ describe('any', function() {
   it('with async', function(done) {
     var i = 0;
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 1;
-        next();
+        done();
       }, 10);
     });
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 2;
-        next();
+        done();
       }, 10);
     });
 
@@ -119,17 +122,17 @@ describe('any', function() {
   it('with async, later first', function(done) {
     var i = 0;
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 1;
-        next();
+        done();
       }, 30);
     });
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 2;
-        next();
+        done();
       }, 10);
     });
 
@@ -143,20 +146,20 @@ describe('any', function() {
     });
   });
 
-  it('without callback', function(done) {
+  it('without done', function(done) {
     var i = 0;
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 1;
-        next();
+        done();
       }, 10);
     });
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 2;
-        next();
+        done();
       }, 30);
     });
 
@@ -170,6 +173,36 @@ describe('any', function() {
       expect(i).to.be(3);
       done();
     }, 40);
+  });
+
+  it('does not go through', function() {
+    var i = 0;
+
+    queue.use(function(done, fail) {
+      i += 1;
+      fail();
+    });
+
+    queue.use(function(done, fail) {
+      i += 2;
+      fail();
+    });
+
+    queue.use(function(done, fail) {
+      // this would not be executed
+      i += 4;
+      fail();
+    });
+
+    queue.any(function() {
+      // this would not be executed
+      expect().fail('this would not be executed');
+    }, function() {
+      // this would be executed
+      i += 8;
+    });
+
+    expect(i).to.be(15);
   });
 
   afterEach(function() {
@@ -189,17 +222,17 @@ describe('all', function() {
   it('with async', function(done) {
     var i = 0;
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 1;
-        next();
+        done();
       }, 10);
     });
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 2;
-        next();
+        done();
       }, 10);
     });
 
@@ -212,17 +245,17 @@ describe('all', function() {
   it('with async, later first', function(done) {
     var i = 0;
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 1;
-        next();
+        done();
       }, 30);
     });
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 2;
-        next();
+        done();
       }, 10);
     });
 
@@ -236,20 +269,20 @@ describe('all', function() {
     });
   });
 
-  it('without callback', function(done) {
+  it('without done', function(done) {
     var i = 0;
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 1;
-        next();
+        done();
       }, 10);
     });
 
-    queue.use(function(next) {
+    queue.use(function(done) {
       setTimeout(function() {
         i += 2;
-        next();
+        done();
       }, 30);
     });
 
@@ -263,6 +296,36 @@ describe('all', function() {
       expect(i).to.be(3);
       done();
     }, 40);
+  });
+
+  it('does not go through', function() {
+    var i = 0;
+
+    queue.use(function(done, fail) {
+      i += 1;
+      done();
+    });
+
+    queue.use(function(done, fail) {
+      i += 2;
+      fail();
+    });
+
+    queue.use(function(done, fail) {
+      // this would not be executed
+      i += 4;
+      done();
+    });
+
+    queue.all(function() {
+      // this would not be executed
+      expect().fail('this would not be executed');
+    }, function() {
+      // this would be executed
+      i += 8;
+    });
+
+    expect(i).to.be(15);
   });
 
   afterEach(function() {

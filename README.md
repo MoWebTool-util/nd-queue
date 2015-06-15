@@ -30,39 +30,41 @@ var WidgetHasQueue = Widget.extend({
 
 ### run
 
-synchronous. run queue member step by step (one invokes by previous one with `next`).
+synchronous. run queue member step by step (one invokes by previous one with `done`).
 
 ```js
 var queue = new Queue()
 
 // use function
-queue.use(function([arg1, arg2, ...], next){
+queue.use(function([arg1, arg2, ...], done, fail){
   // do some (a)sync job, then
-  next()
+  done()
 })
 
 // use functions
-queue.use([function([arg1, arg2, ...], next){
+queue.use([function([arg1, arg2, ...], done, fail){
   // do some (a)sync job, then
-  next()
+  done()
 }, ...])
 
 // use function with context key (defaults: 'ctx')
-queue.use(function([arg1, arg2, ...], next){
+queue.use(function([arg1, arg2, ...], done, fail){
   // do some (a)sync job, then
-  next()
+  done()
 }, 'upload')
 
 // dynamically pass arguments to queue members
 queue.run([arg1, arg2, ... ], [function callback([arg1, arg2, ... ]) {
-  // do some callbacks
+  // do some jobs for done
+}], [function callback([arg1, arg2, ... ]) {
+  // do some jobs for fail
 }])
 ```
 
 ### any
 
-asynchronous. if any member of the queue is finished, call the callback.
+asynchronous. if any member of the queue is finished, call the callback for done, otherwise call the callback for fail.
 
 ### all
 
-asynchronous. if all members of the queue is finished, call the callback.
+asynchronous. if all members of the queue is finished, call the callback for done, otherwise call the callback for fail.
