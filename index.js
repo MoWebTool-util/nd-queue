@@ -27,10 +27,22 @@ var parse = function(args) {
   };
 };
 
+/**
+ * @class
+ */
 var Queue = function() {
+  /**
+   * 堆空间
+   * @type {Object}
+   */
   this.stack = {};
 };
 
+/**
+ * 添加队列任务
+ * @param  {Function|Array} fn  队列任务
+ * @param  {String}   [ctx] 将任务推送到指定堆顶
+ */
 Queue.prototype.use = function(fn, ctx) {
   if (!this.stack) {
     this.stack = {};
@@ -53,6 +65,13 @@ Queue.prototype.use = function(fn, ctx) {
   return this;
 };
 
+/**
+ * 顺序执行
+ * @param {Object} [options1]  参数 1
+ * @param {Object} [optionsN]  参数 N
+ * @param {Function} [done]  成功回调
+ * @param {Function} [fail]  失败回调
+ */
 Queue.prototype.run = function() {
   var stack = this.stack;
   var fns = [];
@@ -84,6 +103,14 @@ Queue.prototype.run = function() {
   })();
 };
 
+/**
+ * 并行执行队列任务
+ * 任意任务执行成功，则队列执行成功
+ * @param {Object} [options1]  参数 1
+ * @param {Object} [optionsN]  参数 N
+ * @param {Function} [done]  成功回调
+ * @param {Function} [fail]  失败回调
+ */
 Queue.prototype.any = function() {
   var stack = this.stack;
   var fns = [];
@@ -120,6 +147,14 @@ Queue.prototype.any = function() {
   });
 };
 
+/**
+ * 并行执行队列任务
+ * 所有任务执行成功，则队列执行成功
+ * @param {Object} [options1]  参数 1
+ * @param {Object} [optionsN]  参数 N
+ * @param {Function} [done]  成功回调
+ * @param {Function} [fail]  失败回调
+ */
 Queue.prototype.all = function() {
   var stack = this.stack;
   var fns = [];
