@@ -1,12 +1,16 @@
 {
   "name": "nd-queue",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "简单的队列执行控制",
   "keywords": [],
   "homepage": "https://github.com/ndfront/nd-queue",
   "author": {
     "name": "crossjs",
     "email": "liwenfu@crossjs.com"
+  },
+  "scripts": {
+    "test": "mocha --bail --timeout 200 --slow 99999 tests/**/*-spec.js",
+    "coverage": "node_modules/isparta/bin/isparta cover node_modules/mocha/bin/_mocha -- --bail --timeout 200 --slow 99999 -R dot tests/**/*-spec.js"
   },
   "repository": {
     "type": "git",
@@ -16,12 +20,11 @@
     "url": "https://github.com/ndfront/nd-queue/issues"
   },
   "licenses": "MIT",
-  "devDependencies": {},
-  "spm": {
-    "main": "index.js",
-    "dependencies": {},
-    "devDependencies": {
-      "expect.js": "0.3.1"
-    }
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "isparta": "^4.0.0",
+    "mocha": "^2.4.5"
   }
 }

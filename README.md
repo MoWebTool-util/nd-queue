@@ -1,13 +1,15 @@
 # nd-queue
 
-[![spm version](http://spm.crossjs.com/badge/nd-queue)](http://spm.crossjs.com/package/nd-queue)
+[![Travis](https://img.shields.io/travis/ndfront/nd-queue.svg?style=flat-square)](https://github.com/ndfront/nd-queue)
+[![Coveralls](https://img.shields.io/coveralls/ndfront/nd-queue.svg?style=flat-square)](https://github.com/ndfront/nd-queue)
+[![NPM version](https://img.shields.io/npm/v/nd-queue.svg?style=flat-square)](https://npmjs.org/package/nd-queue)
 
 > 简单的队列执行控制。
 
 ## 安装
 
 ```bash
-$ spm install nd-queue --save
+$ npm install nd-queue --save
 ```
 
 ## 使用
